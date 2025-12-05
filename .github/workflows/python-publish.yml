@@ -10,7 +10,9 @@ jobs:
     environment:
       name: release
       url: https://pypi.org/project/django-polls/
-    
+    permissions:
+      id-token: write  # 这是获取OIDC令牌所必需的
+      contents: read   # 这是检出代码所必需的
     steps:
     - uses: actions/checkout@v4
     
