@@ -1,0 +1,73 @@
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Temporary files
+*~
+*.tmp
+*.temp
+
+# Documentation
+_build/
+# Documentation build artifacts
+docs/livehtml/
+docs/_build/
+docs/build/
+
+# Sphinx
+docs/source/_templates/
+docs/source/_static/
+docs/source/_build/
+
+# Generated documentation
+*.html
+*.doctrees
+.pickle
+.searchindex.js
+.objects.inv
+.buildinfo
