@@ -3,23 +3,64 @@ name: Publish Python Package
 on:
   release:
     types: [published]
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
-  deploy:
+  test:
+    name: Test package build
     runs-on: ubuntu-latest
-    environment:
-      name: release
-      url: https://pypi.org/project/django-polls/
-    permissions:
-      id-token: write  # 这是获取OIDC令牌所必需的
-      contents: read   # 这是检出代码所必需的
+    
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: '3.12'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine check-manifest
+        pip install django>=3.2  # 测试Django兼容性
+    
+    - name: Check manifest
+      run: check-manifest -v
+    
+    - name: Build package
+      run: python -m build
+    
+    - name: Check package
+      run: twine check dist/*
+    
+    - name: Test installation
+      run: |
+        pip install dist/*.whl
+        python -c "import django_polls; print(f'Successfully installed django-polls {django_polls.__version__}')"
+
+  publish:
+    name: Publish to PyPI
+    needs: test  # 依赖test任务
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/django-polls/
+    
+    permissions:
+      id-token: write  # 重要：用于OIDC认证
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
     
     - name: Install dependencies
       run: |
@@ -31,3 +72,6 @@ jobs:
     
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        verbose: true
+        print-hash: true
