@@ -2,6 +2,8 @@
 build/
 dist/
 *.egg-info/
+.eggs/
+pip-wheel-metadata/
 
 # Python cache
 __pycache__/
@@ -9,6 +11,8 @@ __pycache__/
 *$py.class
 *.so
 .Python
+*.pyo
+*.pyd
 
 # Environments
 .env
@@ -24,6 +28,11 @@ venv.bak/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+media/
+
+# Static files (if collected)
+staticfiles/
+*.mo
 
 # OS
 .DS_Store
@@ -33,6 +42,7 @@ db.sqlite3-journal
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
 # IDE
 .vscode/
@@ -40,47 +50,57 @@ Thumbs.db
 *.swp
 *.swo
 *~
+*.code-workspace
 
 # Testing
 .coverage
 htmlcov/
 .pytest_cache/
 .tox/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Sphinx documentation
+docs/_build/
+docs/livehtml/
+
+# Project specific
+# 添加你的项目特定文件
+fix_git_push.sh
+generate_project_tree.sh
+sphinx_build_docs.sh
+sphinx_inotify_watch.sh
+
+# Python packaging
+*.egg
+MANIFEST
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
 
 # Temporary files
 *~
 *.tmp
 *.temp
-
-# Documentation
-_build/
-# Documentation build artifacts
-docs/livehtml/
-docs/_build/
-docs/build/
-
-# Sphinx
-docs/source/_templates/
-docs/source/_static/
-docs/source/_build/
-
-# Generated documentation
-*.html
-*.doctrees
-.pickle
-.searchindex.js
-.objects.inv
-.buildinfo
-# Image files (too large for git)
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.bmp
-*.ico
-*.svg
-
-# Specific image directories
-django_polls/static/polls/images/
-docs/source/project_tree.txt
-generate_project_tree.sh
+*.bak

@@ -1,0 +1,90 @@
+.
+|-- django_polls
+|   |-- migrations
+|   |   |-- 0001_initial.py
+|   |   `-- __init__.py
+|   |-- static
+|   |   `-- polls
+|   |       |-- images
+|   |       `-- style.css
+|   |-- templates
+|   |   `-- polls
+|   |       |-- detail.html
+|   |       |-- index.html
+|   |       `-- results.html
+|   |-- __init__.py
+|   |-- admin.py
+|   |-- apps.py
+|   |-- models.py
+|   |-- tests.py
+|   |-- urls.py
+|   `-- views.py
+|-- docs
+|   |-- livehtml
+|   |   |-- .doctrees
+|   |   |   |-- environment.pickle
+|   |   |   |-- index.doctree
+|   |   |   |-- project-structure.doctree
+|   |   |   |-- structure.doctree
+|   |   |   |-- tutorial.doctree
+|   |   |   `-- usage-guide.doctree
+|   |   |-- _sources
+|   |   |   |-- index.rst.txt
+|   |   |   |-- project-structure.rst.txt
+|   |   |   |-- structure.rst.txt
+|   |   |   |-- tutorial.rst.txt
+|   |   |   `-- usage-guide.rst.txt
+|   |   |-- _static
+|   |   |   |-- alabaster.css
+|   |   |   |-- base-stemmer.js
+|   |   |   |-- basic.css
+|   |   |   |-- custom.css
+|   |   |   |-- doctools.js
+|   |   |   |-- documentation_options.js
+|   |   |   |-- english-stemmer.js
+|   |   |   |-- github-banner.svg
+|   |   |   |-- language_data.js
+|   |   |   |-- pygments.css
+|   |   |   |-- searchtools.js
+|   |   |   `-- sphinx_highlight.js
+|   |   |-- .buildinfo
+|   |   |-- genindex.html
+|   |   |-- index.html
+|   |   |-- objects.inv
+|   |   |-- project-structure.html
+|   |   |-- search.html
+|   |   |-- searchindex.js
+|   |   |-- structure.html
+|   |   |-- tutorial.html
+|   |   `-- usage-guide.html
+|   |-- source
+|   |   |-- _static
+|   |   |-- _templates
+|   |   |-- conf.py
+|   |   |-- index.rst
+|   |   |-- project-structure.rst
+|   |   |-- project_tree.txt
+|   |   `-- usage-guide.rst
+|   |-- Makefile
+|   `-- make.bat
+|-- mysite
+|   |-- __init__.py
+|   |-- asgi.py
+|   |-- settings.py
+|   |-- urls.py
+|   `-- wsgi.py
+|-- templates
+|   `-- admin
+|       `-- base_site.html
+|-- .gitignore
+|-- LICENSE
+|-- MANIFEST.in
+|-- README.rst
+|-- build_docs.sh
+|-- generate_project_tree.sh
+|-- inotify_watch.sh
+|-- manage.py
+|-- pyproject.toml
+`-- upload_pypi.py
+
+19 directories, 69 files

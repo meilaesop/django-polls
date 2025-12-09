@@ -1,2 +1,39 @@
+# Django Polls App - MANIFEST.in
+
+# Required files for distribution
+include LICENSE
+include README.rst
+include pyproject.toml
+
+# Main application files
+recursive-include django_polls *.py
 recursive-include django_polls/static *
 recursive-include django_polls/templates *
+recursive-include django_polls/migrations *.py
+
+# Include custom admin templates (from templates/ directory)
+recursive-include templates *.html
+
+# Exclude development directories
+prune tests
+prune docs
+prune mysite
+prune .github
+prune build
+prune dist
+
+# Exclude shell scripts, manage.py and local configs
+exclude *.sh
+exclude manage.py
+exclude *.sqlite3
+
+# Exclude cache and temp files
+global-exclude *.py[cod]
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude Thumbs.db
+global-exclude .vscode
+global-exclude .idea
+global-exclude .venv
+global-exclude venv
+global-exclude env
