@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -28,8 +29,10 @@ jobs:
     - name: Check package
       run: twine check dist/*
     
-    - name: Publish to PyPI
+    - name: Upload to PyPI with Token
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: twine upload dist/*
+      run: |
+        echo "正在使用 PYPI_API_TOKEN 上传到 PyPI..."
+        twine upload dist/* --verbose
