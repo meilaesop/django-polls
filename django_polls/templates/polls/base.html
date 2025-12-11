@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Django投票系统{% endblock %}</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* 用户认证菜单样式 */
+        .user-auth-menu {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+        .user-auth-menu a.btn {
+            margin: 0 3px;
+            padding: 4px 12px;
+            font-size: 13px;
+        }
+        .welcome-text {
+            color: #666;
+            margin-right: 10px;
+            font-weight: 500;
+        }
+        .main-container {
+            padding-top: 60px; /* 为顶部菜单留出空间 */
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- 用户认证菜单 -->
+    <nav class="user-auth-menu">
+        {% if user.is_authenticated %}
+            <span class="welcome-text">欢迎，<strong>{{ user.username }}</strong></span>
+            <a href="{% url 'polls:profile' %}" class="btn btn-sm btn-outline-primary">个人中心</a>
+            <a href="{% url 'polls:logout' %}" class="btn btn-sm btn-outline-secondary">退出</a>
+        {% else %}
+            <a href="{% url 'polls:login' %}" class="btn btn-sm btn-outline-primary">登录</a>
+            <a href="{% url 'polls:register' %}" class="btn btn-sm btn-success">注册</a>
+        {% endif %}
+    </nav>
+    
+    <!-- 主内容区域 -->
+    <div class="container main-container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1>{% block page_title %}Django投票系统{% endblock %}</h1>
+            <p class="text-muted">{% block page_subtitle %}用户认证功能测试{% endblock %}</p>
+        </div>
+        
+        <!-- 消息提醒区域 -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- 主要内容 -->
+        {% block content %}
+        <div class="alert alert-info">
+            这里是页面内容区域，由子模板填充。
+        </div>
+        {% endblock %}
+        
+        <!-- 页脚 -->
+        <footer class="mt-5 pt-4 border-top">
+            <div class="text-center text-muted">
+                <p>© {% now "Y" %} Django投票系统 | 用户认证演示</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

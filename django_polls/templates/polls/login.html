@@ -1,0 +1,123 @@
+{% extends "polls/base.html" %}
+
+{% block title %}用户登录 - Django投票系统{% endblock %}
+{% block page_title %}用户登录{% endblock %}
+{% block page_subtitle %}登录账户开始投票{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> 登录账户</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- 显示表单错误 -->
+                    {% if form.errors %}
+                    <div class="alert alert-warning">
+                        <h5><i class="bi bi-exclamation-triangle"></i> 登录失败</h5>
+                        <p class="mb-0">请输入正确的用户名和密码。注意：大小写敏感。</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 用户名字段 -->
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">
+                            <strong>用户名</strong>
+                        </label>
+                        <input type="text" 
+                               name="username" 
+                               id="id_username" 
+                               class="form-control" 
+                               placeholder="请输入用户名"
+                               value="{{ form.username.value|default:'' }}"
+                               required
+                               autofocus>
+                        <div class="form-text">
+                            请输入您注册时使用的用户名
+                        </div>
+                    </div>
+                    
+                    <!-- 密码字段 -->
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">
+                            <strong>密码</strong>
+                        </label>
+                        <input type="password" 
+                               name="password" 
+                               id="id_password" 
+                               class="form-control" 
+                               placeholder="请输入密码"
+                               required>
+                        <div class="form-text">
+                            <a href="#" class="text-decoration-none">忘记密码？</a>
+                        </div>
+                    </div>
+                    
+                    <!-- 记住我选项 -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                        <label class="form-check-label" for="remember_me">记住我</label>
+                    </div>
+                    
+                    <!-- 提交按钮 -->
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-info btn-lg text-white">
+                            <i class="bi bi-door-open"></i> 立即登录
+                        </button>
+                    </div>
+                    
+                    <!-- 其他选项 -->
+                    <div class="text-center">
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'polls:register' %}" class="btn btn-outline-success">
+                                <i class="bi bi-person-plus"></i> 注册新账户
+                            </a>
+                            <a href="{% url 'polls:index' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-house"></i> 返回首页
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-muted text-center">
+                <small>测试账户：admin / admin123 （如果已创建）</small>
+            </div>
+        </div>
+        
+        <!-- 演示账户提示 -->
+        <div class="alert alert-light mt-4">
+            <h6><i class="bi bi-lightbulb"></i> 提示：</h6>
+            <p class="mb-0 small">
+                如果您是第一次使用，请先<a href="{% url 'polls:register' %}" class="text-decoration-none">注册新账户</a>。
+                这是一个演示项目，请使用安全的密码。
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    .btn-info {
+        background-color: #0dcaf0;
+        border-color: #0dcaf0;
+    }
+    .btn-info:hover {
+        background-color: #0bb5d8;
+        border-color: #0bb5d8;
+    }
+    .form-check-input:checked {
+        background-color: #0dcaf0;
+        border-color: #0dcaf0;
+    }
+</style>
+{% endblock %}
