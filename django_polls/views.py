@@ -50,3 +50,52 @@ def vote(request,question_id):
         # always return an HttpResponseRedirect after successfully dealing
         # with POST data.This prevents data from being posted twice if a user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results",args=(question.id,)))
+
+# ============================================================================
+# 用户认证视图
+# ============================================================================
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout as auth_logout
+
+def register(request):
+    """用户注册视图"""
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # 注册后自动登录
+            login(request, user)
+            return redirect('polls:index')
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'polls/register.html', {'form': form})
+
+def custom_login(request):
+    """自定义登录视图"""
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('polls:index')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'polls/login.html', {'form': form})
+
+@login_required
+def profile(request):
+    """用户个人资料页面"""
+    return render(request, 'polls/profile.html', {'user': request.user})
+
+def custom_logout(request):
+    """自定义退出视图"""
+    auth_logout(request)
+    return redirect('polls:index')

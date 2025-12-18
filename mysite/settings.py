@@ -124,3 +124,37 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
+# ============================================================================
+# 用户认证相关设置
+# ============================================================================
+
+# 登录URL（当@login_required重定向时使用）
+LOGIN_URL = '/polls/login/'
+
+# 登录成功后重定向的URL
+LOGIN_REDIRECT_URL = '/polls/'
+
+# 退出后重定向的URL
+LOGOUT_REDIRECT_URL = '/polls/'
+
+# 认证后端（保持默认）
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# 密码验证器（保持默认）
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
