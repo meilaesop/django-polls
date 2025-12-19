@@ -1,545 +1,647 @@
-<!doctype html>
-<html lang="en-US">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Django Polls - Voting Platform</title>
-        {% load static %}
-        <link rel="stylesheet" href="{% static 'polls/style.css' %}">
-        <!-- Bootstrap 5 -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <style>
-            :root {
-                --primary-color: #4a6fa5;
-                --secondary-color: #166088;
-                --accent-color: #ff6b6b;
-                --light-bg: #f8f9fa;
-                --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
+{% extends 'polls/base.html' %}
+
+{% block title %}首页 - Django投票系统{% endblock %}
+
+{% block page_title %}发现热门投票{% endblock %}
+{% block page_subtitle %}参与讨论，表达您的观点{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 首页特定样式 */
+    .hero-section {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        border-radius: 24px;
+        padding: 60px 40px;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+        z-index: 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+        max-width: 600px;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 40px;
+        margin-top: 40px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: block;
+        line-height: 1;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 8px;
+    }
+
+    /* 投票卡片样式 */
+    .poll-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+
+    .poll-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow-light);
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        position: relative;
+    }
+
+    .poll-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .poll-card-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 24px;
+        position: relative;
+    }
+
+    .poll-card-header::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 40px;
+        width: 20px;
+        height: 20px;
+        background: var(--primary-gradient);
+        transform: rotate(45deg);
+    }
+
+    .poll-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        font-weight: 600;
+        margin-right: 12px;
+    }
+
+    .poll-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: white;
+        display: inline;
+    }
+
+    .poll-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .poll-card-body {
+        padding: 30px;
+    }
+
+    .poll-question {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+        line-height: 1.4;
+    }
+
+    .poll-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(99, 102, 241, 0.1);
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .meta-item i {
+        color: var(--primary-color);
+    }
+
+    .poll-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .btn-vote {
+        flex: 1;
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 14px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-vote:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        color: white;
+    }
+
+    .btn-results {
+        flex: 1;
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        padding: 14px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-results:hover {
+        background: rgba(99, 102, 241, 0.1);
+        transform: translateY(-2px);
+        color: var(--primary-color);
+    }
+
+    /* 空状态样式 */
+    .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        background: var(--card-bg);
+        border-radius: 20px;
+        border: 2px dashed rgba(99, 102, 241, 0.2);
+        margin-bottom: 60px;
+    }
+
+    .empty-state-icon {
+        font-size: 5rem;
+        color: rgba(99, 102, 241, 0.2);
+        margin-bottom: 24px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .empty-state h3 {
+        color: var(--text-primary);
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+        max-width: 400px;
+        margin: 0 auto 30px;
+    }
+
+    .btn-create {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        color: white;
+    }
+
+    /* 功能特性部分 */
+    .features-section {
+        margin-bottom: 80px;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 60px;
+        color: var(--text-primary);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .feature-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 40px 30px;
+        text-align: center;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--primary-gradient);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 32px;
+        color: white;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+    }
+
+    .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+    }
+
+    .feature-description {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-stats {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .poll-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .poll-actions {
+            flex-direction: column;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-section {
+            padding: 40px 20px;
+        }
+    }
+
+    /* 动画效果 */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .poll-card {
+        animation: fadeInUp 0.6s ease-out;
+        animation-fill-mode: both;
+    }
+
+    .poll-card:nth-child(1) { animation-delay: 0.1s; }
+    .poll-card:nth-child(2) { animation-delay: 0.2s; }
+    .poll-card:nth-child(3) { animation-delay: 0.3s; }
+    .poll-card:nth-child(4) { animation-delay: 0.4s; }
+    .poll-card:nth-child(5) { animation-delay: 0.5s; }
+
+    /* 加载动画 */
+    .loading-shimmer {
+        background: linear-gradient(90deg, 
+            rgba(99, 102, 241, 0.05) 25%, 
+            rgba(99, 102, 241, 0.1) 50%, 
+            rgba(99, 102, 241, 0.05) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+        border-radius: 12px;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">参与投票，<br>表达您的观点</h1>
+        <p class="hero-subtitle">
+            加入我们，参与热门话题讨论，用投票表达您的真实想法。
+            每一次投票都是对民主的实践。
+        </p>
+        
+        {% if latest_question_list %}
+        <div class="hero-stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ latest_question_list|length }}</span>
+                <span class="stat-label">进行中投票</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">
+                    {% if latest_question_list %}
+                        {% with question=latest_question_list.0 %}
+                            {{ question.choice_set.count|default:0 }}
+                        {% endwith %}
+                    {% else %}
+                        0
+                    {% endif %}
+                </span>
+                <span class="stat-label">总选项数</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">
+                    {% if latest_question_list %}
+                        {% with question=latest_question_list.0 %}
+                            {{ question.total_votes|default:0 }}
+                        {% endwith %}
+                    {% else %}
+                        0
+                    {% endif %}
+                </span>
+                <span class="stat-label">总投票数</span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <h2 class="section-title">为什么选择我们？</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="feature-title">安全可靠</h3>
+            <p class="feature-description">
+                采用先进的加密技术，确保每一票都安全可靠。
+                您的隐私和数据安全是我们的首要任务。
+            </p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3 class="feature-title">快速响应</h3>
+            <p class="feature-description">
+                实时统计投票结果，即刻查看最新趋势。
+                无需等待，投票结果即时更新。
+            </p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3 class="feature-title">多端适配</h3>
+            <p class="feature-description">
+                完美适配手机、平板和电脑，随时随地参与投票。
+                响应式设计，最佳用户体验。
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Polls Section -->
+<h2 class="section-title">热门投票</h2>
+
+{% if latest_question_list %}
+<div class="poll-grid">
+    {% for question in latest_question_list %}
+    <div class="poll-card">
+        <div class="poll-card-header">
+            <span class="poll-number">#{{ forloop.counter }}</span>
+            <span class="poll-title">投票问卷</span>
+            <span class="poll-badge">
+                <i class="fas fa-fire me-1"></i>热门
+            </span>
+        </div>
+        <div class="poll-card-body">
+            <h3 class="poll-question">{{ question.question_text }}</h3>
             
-            body {
-                background: 
-                    /* 渐变背景 */
-                    linear-gradient(135deg, rgba(74, 111, 165, 0.1) 0%, rgba(22, 96, 136, 0.1) 100%),
-                    /* 如果你有背景图片，取消注释下面这行 */
-                 /*  url({% static 'polls/images/background.jpg' %}) center/cover no-repeat fixed, */
-                    #f5f7fa;
-                min-height: 100vh;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                position: relative;
-            }
-            
-            /* 添加覆盖层增强可读性 */
-            body::before {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(255, 255, 255, 0.7);
-                z-index: -1;
-            }
-            
-            /* 添加背景图案 */
-            body::after {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-image: 
-                    radial-gradient(circle at 25% 25%, rgba(74, 111, 165, 0.03) 0%, transparent 50%),
-                    radial-gradient(circle at 75% 75%, rgba(255, 107, 107, 0.03) 0%, transparent 50%);
-                z-index: -1;
-            }
-            
-            .navbar {
-                background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            
-            .navbar-brand {
-                font-weight: bold;
-                font-size: 1.5rem;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .hero-section {
-                background: linear-gradient(135deg, rgba(22, 96, 136, 0.9) 0%, rgba(74, 111, 165, 0.9) 100%);
-                color: white;
-                border-radius: 20px;
-                margin: 2rem 0;
-                padding: 4rem 2rem;
-                position: relative;
-                overflow: hidden;
-                box-shadow: 0 10px 30px rgba(22, 96, 136, 0.2);
-            }
-            
-            .hero-section::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                right: -50%;
-                width: 100%;
-                height: 200%;
-                background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            }
-            
-            .hero-title {
-                font-size: 2.8rem;
-                font-weight: 800;
-                margin-bottom: 1rem;
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            }
-            
-            .hero-subtitle {
-                font-size: 1.3rem;
-                opacity: 0.95;
-                max-width: 600px;
-                margin: 0 auto;
-            }
-            
-            .poll-card {
-                background: white;
-                border-radius: 15px;
-                box-shadow: var(--card-shadow);
-                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                border: none;
-                overflow: hidden;
-                margin-bottom: 2rem;
-                position: relative;
-                border-top: 5px solid var(--primary-color);
-            }
-            
-            .poll-card:hover {
-                transform: translateY(-10px) scale(1.02);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-            }
-            
-            .poll-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 5px;
-                background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-            
-            .poll-card:hover::before {
-                opacity: 1;
-            }
-            
-            .poll-header {
-                background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-                color: white;
-                padding: 1.2rem;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .poll-badge {
-                background: var(--accent-color);
-                color: white;
-                padding: 0.2rem 0.8rem;
-                border-radius: 20px;
-                font-size: 0.8rem;
-                margin-left: auto;
-            }
-            
-            .poll-body {
-                padding: 2rem;
-                position: relative;
-            }
-            
-            .poll-question {
-                font-size: 1.3rem;
-                font-weight: 700;
-                color: #2c3e50;
-                margin-bottom: 1.5rem;
-                line-height: 1.4;
-            }
-            
-            .poll-meta {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                font-size: 0.9rem;
-                color: #666;
-                margin-top: 1.5rem;
-                padding-top: 1.5rem;
-                border-top: 1px solid #eee;
-            }
-            
-            .meta-item {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-            }
-            
-            .vote-btn {
-                background: linear-gradient(45deg, var(--accent-color), #ff8e8e);
-                border: none;
-                border-radius: 30px;
-                padding: 0.8rem 2rem;
-                font-weight: bold;
-                font-size: 1.1rem;
-                color: white;
-                transition: all 0.3s ease;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-            }
-            
-            .vote-btn:hover {
-                transform: scale(1.08);
-                box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-                color: white;
-            }
-            
-            .results-btn {
-                background: var(--secondary-color);
-                border: none;
-                border-radius: 30px;
-                padding: 0.8rem 2rem;
-                font-weight: bold;
-                font-size: 1.1rem;
-                color: white;
-                transition: all 0.3s ease;
-                text-decoration: none;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                box-shadow: 0 4px 15px rgba(22, 96, 136, 0.3);
-            }
-            
-            .results-btn:hover {
-                background: #0d4f6e;
-                transform: scale(1.08);
-                box-shadow: 0 6px 20px rgba(22, 96, 136, 0.4);
-                color: white;
-            }
-            
-            .no-polls {
-                text-align: center;
-                padding: 4rem;
-                background: white;
-                border-radius: 20px;
-                box-shadow: var(--card-shadow);
-                border: 2px dashed #ddd;
-            }
-            
-            .no-polls-icon {
-                font-size: 5rem;
-                color: #e0e0e0;
-                margin-bottom: 1.5rem;
-                animation: pulse 2s infinite;
-            }
-            
-            @keyframes pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.1); }
-                100% { transform: scale(1); }
-            }
-            
-            .stats-box {
-                background: white;
-                border-radius: 15px;
-                padding: 2rem;
-                box-shadow: var(--card-shadow);
-                margin-bottom: 2rem;
-                text-align: center;
-                transition: transform 0.3s ease;
-                border-top: 4px solid var(--primary-color);
-            }
-            
-            .stats-box:hover {
-                transform: translateY(-5px);
-            }
-            
-            .stat-number {
-                font-size: 2.5rem;
-                font-weight: 800;
-                color: var(--primary-color);
-                margin-bottom: 0.5rem;
-            }
-            
-            .stat-label {
-                color: #666;
-                font-size: 1rem;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-            }
-            
-            .footer {
-                margin-top: 4rem;
-                padding: 2.5rem 0;
-                background: rgba(255, 255, 255, 0.9);
-                border-top: 1px solid #eee;
-                border-radius: 20px 20px 0 0;
-                box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
-            }
-            
-            .feature-icon {
-                width: 60px;
-                height: 60px;
-                background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 1.5rem;
-                margin: 0 auto 1rem;
-                box-shadow: 0 4px 10px rgba(74, 111, 165, 0.3);
-            }
-            
-            .feature-title {
-                color: var(--secondary-color);
-                font-weight: 600;
-                margin-bottom: 0.5rem;
-            }
-            
-            @media (max-width: 768px) {
-                .hero-title {
-                    font-size: 2rem;
-                }
-                
-                .hero-subtitle {
-                    font-size: 1rem;
-                }
-                
-                .poll-card {
-                    margin-bottom: 1.5rem;
-                }
-                
-                .vote-btn, .results-btn {
-                    width: 100%;
-                    justify-content: center;
-                    margin-bottom: 0.5rem;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-            <div class="container">
-                <a class="navbar-brand" href="{% url 'polls:index' %}">
-                    <i class="fas fa-poll"></i>
-                    Django Polls
+            <div class="poll-actions">
+                <a href="{% url 'polls:detail' question.id %}" class="btn-vote">
+                    <i class="fas fa-check-circle"></i> 立即投票
                 </a>
-                <div class="navbar-text">
-                    <span class="badge bg-light text-dark">
-                        <i class="fas fa-users me-1"></i>
-                        {% if latest_question_list %}
-                            {{ latest_question_list|length }} Active Poll{{ latest_question_list|length|pluralize }}
-                        {% else %}
-                            No Active Polls
-                        {% endif %}
-                    </span>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <div class="container py-4">
-            <!-- Hero Section -->
-            <div class="hero-section text-center">
-                <h1 class="hero-title">Voice Your Opinion</h1>
-                <p class="hero-subtitle">Join thousands of users in shaping decisions through democratic voting</p>
+                <a href="{% url 'polls:results' question.id %}" class="btn-results">
+                    <i class="fas fa-chart-bar"></i> 查看结果
+                </a>
             </div>
 
-            <!-- Stats Row -->
-            <div class="row mb-5">
-                <div class="col-md-4">
-                    <div class="stats-box">
-                        <div class="stat-number">{{ latest_question_list|length|default:0 }}</div>
-                        <div class="stat-label">Active Polls</div>
-                    </div>
+            <div class="poll-meta">
+                <div class="meta-item">
+                    <i class="fas fa-list-ul"></i>
+                    <span>{{ question.choice_set.count }} 个选项</span>
                 </div>
-                <div class="col-md-4">
-                    <div class="stats-box">
-                        <div class="stat-number">
-                            {% if latest_question_list %}
-                                {% with total=latest_question_list.0.choice_set.count %}
-                                    {{ total|default:0 }}
-                                {% endwith %}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </div>
-                        <div class="stat-label">Total Choices</div>
-                    </div>
+                <div class="meta-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>{{ question.pub_date|date:"Y-m-d" }}</span>
                 </div>
-                <div class="col-md-4">
-                    <div class="stats-box">
-                        <div class="stat-number">
-                            {% if latest_question_list %}
-                                {{ latest_question_list.0.total_votes|default:0 }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </div>
-                        <div class="stat-label">Total Votes</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features -->
-            <div class="row mb-5">
-                <div class="col-md-4 text-center">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h5 class="feature-title">Secure Voting</h5>
-                    <p class="text-muted">Every vote is protected and anonymous</p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h5 class="feature-title">Real-time Results</h5>
-                    <p class="text-muted">See live updates as people vote</p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h5 class="feature-title">Mobile Friendly</h5>
-                    <p class="text-muted">Vote from any device, anywhere</p>
-                </div>
-            </div>
-
-            <!-- Polls Section -->
-            <h2 class="mb-4" style="color: var(--secondary-color);">
-                <i class="fas fa-vote-yea me-2"></i>Available Polls
-            </h2>
-            
-            {% if latest_question_list %}
-                <div class="row">
-                    {% for question in latest_question_list %}
-                    <div class="col-lg-4 col-md-6">
-                        <div class="poll-card">
-                            <div class="poll-header">
-                                <i class="fas fa-question-circle"></i>
-                                Poll #{{ forloop.counter }}
-                                <span class="poll-badge">NEW</span>
-                            </div>
-                            <div class="poll-body">
-                                <h5 class="poll-question">{{ question.question_text }}</h5>
-                                
-                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-                                    <a href="{% url 'polls:detail' question.id %}" class="vote-btn">
-                                        <i class="fas fa-check-circle"></i> Vote Now
-                                    </a>
-                                    <a href="{% url 'polls:results' question.id %}" class="results-btn">
-                                        <i class="fas fa-chart-bar"></i> View Results
-                                    </a>
-                                </div>
-                                
-                                <div class="poll-meta">
-                                    <div class="meta-item">
-                                        <i class="fas fa-list-ul"></i>
-                                        <span>{{ question.choice_set.count }} options</span>
-                                    </div>
-                                    <div class="meta-item">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        <span>{{ question.pub_date|date:"M d, Y" }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="no-polls">
-                    <div class="no-polls-icon">
-                        <i class="fas fa-clipboard-question"></i>
-                    </div>
-                    <h3 class="mb-3">No Polls Available Yet</h3>
-                    <p class="text-muted mb-4">Be the first to create a poll and start the conversation!</p>
-                    <button class="btn btn-primary btn-lg">
-                        <i class="fas fa-plus me-2"></i>Create First Poll
-                    </button>
-                </div>
-            {% endif %}
-
-            <!-- Footer -->
-            <div class="footer">
-                <div class="text-center">
-                    <h5 class="mb-3" style="color: var(--primary-color);">
-                        <i class="fas fa-code me-2"></i>Powered by Django
-                    </h5>
-                    <p class="text-muted mb-0">
-                        A modern voting platform built with love and open source technology
-                    </p>
-                    <small class="text-muted">
-                        © {% now "Y" %} Django Polls App | 
-                        <i class="fas fa-users me-1"></i>
-                        {% if latest_question_list %}
-                            {{ latest_question_list.0.total_votes|default:0 }} total votes
-                        {% else %}
-                            0 total votes
-                        {% endif %}
-                    </small>
+                <div class="meta-item">
+                    <i class="fas fa-users"></i>
+                    <span>{{ question.total_votes|default:0 }} 票</span>
                 </div>
             </div>
         </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">
+        <i class="fas fa-clipboard-question"></i>
+    </div>
+    <h3>暂无投票活动</h3>
+    <p>目前还没有投票活动，您可以创建第一个投票来开始讨论！</p>
+    <button class="btn-create">
+        <i class="fas fa-plus me-2"></i>创建第一个投票
+    </button>
+</div>
+{% endif %}
+{% endblock %}
 
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // 卡片动画
-                const cards = document.querySelectorAll('.poll-card');
-                cards.forEach((card, index) => {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(30px) rotateX(10deg)';
-                    
-                    setTimeout(() => {
-                        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0) rotateX(0)';
-                    }, index * 150);
-                });
-                
-                // 统计卡片动画
-                const stats = document.querySelectorAll('.stats-box');
-                stats.forEach((stat, index) => {
-                    setTimeout(() => {
-                        stat.style.transform = 'scale(1.05)';
-                        setTimeout(() => {
-                            stat.style.transform = '';
-                        }, 300);
-                    }, index * 200 + 500);
-                });
-                
-                // 悬停效果
-                const buttons = document.querySelectorAll('.vote-btn, .results-btn');
-                buttons.forEach(button => {
-                    button.addEventListener('mouseenter', function() {
-                        this.style.transform = 'translateY(-2px)';
-                    });
-                    
-                    button.addEventListener('mouseleave', function() {
-                        this.style.transform = '';
-                    });
-                });
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 卡片动画
+        const cards = document.querySelectorAll('.poll-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
+
+        // 按钮交互效果
+        const buttons = document.querySelectorAll('.btn-vote, .btn-results, .btn-create');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
             });
-        </script>
-    </body>
-</html>
+
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // 创建投票按钮点击事件
+        const createBtn = document.querySelector('.btn-create');
+        if (createBtn) {
+            createBtn.addEventListener('click', function() {
+                this.innerHTML = '<span class="loading-spinner me-2"></span>创建中...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    alert('此功能需要管理员权限，请联系管理员创建投票。');
+                    this.innerHTML = '<i class="fas fa-plus me-2"></i>创建第一个投票';
+                    this.disabled = false;
+                }, 1000);
+            });
+        }
+
+        // 统计数字动画
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(number => {
+            const originalValue = parseInt(number.textContent);
+            let current = 0;
+            const increment = Math.ceil(originalValue / 50);
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= originalValue) {
+                    current = originalValue;
+                    clearInterval(timer);
+                }
+                number.textContent = current;
+            }, 30);
+        });
+
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}

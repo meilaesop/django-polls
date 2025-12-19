@@ -3,99 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block description %}现代化的Django在线投票平台{% endblock %}">
+    <meta name="keywords" content="投票,Django,在线投票,问卷调查">
+    <meta name="author" content="Django投票系统">
     <title>{% block title %}Django投票系统{% endblock %}</title>
-    
+
     {% load static %}
+    <!-- 基础CSS -->
     <link rel="stylesheet" href="{% static 'polls/style.css' %}">
-    <!-- Bootstrap 5 CSS -->
+    
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="{% static 'polls/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{% static 'polls/apple-touch-icon.png' %}">
+
+    <!-- 主样式 -->
     <style>
-        /* 用户认证菜单样式 */
+        :root {
+            --primary-color: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --secondary-gradient: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            --shadow-hover: 0 20px 50px 0 rgba(31, 38, 135, 0.15);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-light: #f9fafb;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 用户认证菜单样式 - 2025风格 */
         .user-auth-menu {
             position: fixed;
-            top: 15px;
+            top: 20px;
             right: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px 15px;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            font-size: 14px;
+            z-index: 1050;
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .user-auth-menu:hover {
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.15);
+            transform: translateY(-2px);
+        }
+
         .user-auth-menu a.btn {
-            margin: 0 3px;
-            padding: 4px 12px;
-            font-size: 13px;
+            margin: 0 6px;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
         }
+
+        .user-auth-menu a.btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .user-auth-menu a.btn-outline-primary:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .user-auth-menu a.btn-outline-secondary {
+            border: 2px solid #d1d5db;
+            color: #6b7280;
+        }
+
+        .user-auth-menu a.btn-outline-secondary:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            color: #374151;
+            transform: translateY(-1px);
+        }
+
+        .user-auth-menu a.btn-success {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-auth-menu a.btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
         .welcome-text {
-            color: #666;
-            margin-right: 10px;
-            font-weight: 500;
+            color: var(--text-primary);
+            margin-right: 15px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .welcome-text strong {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .welcome-text::before {
+            content: '👋';
+            font-size: 16px;
+        }
+
         .main-container {
-            padding-top: 60px; /* 为顶部菜单留出空间 */
+            padding-top: 80px;
+            padding-bottom: 40px;
         }
+
         .page-header {
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #007bff;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            position: relative;
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        .page-header h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, #4f46e5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header .text-muted {
+            color: var(--text-secondary) !important;
+            font-size: 1.1rem;
+        }
+
+        /* 消息提醒样式 */
+        .messages {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1040;
+            max-width: 400px;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-dismissible .btn-close {
+            padding: 0.8rem;
+            background-size: 12px;
+        }
+
+        /* 页脚样式 */
+        footer {
+            margin-top: 60px;
+            padding: 40px 0;
+            background: var(--card-bg);
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .user-auth-menu {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                padding: 10px 15px;
+                border-radius: 15px;
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .welcome-text {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 8px;
+            }
+
+            .main-container {
+                padding-top: 100px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .messages {
+                left: 10px;
+                right: 10px;
+                max-width: none;
+            }
+        }
+
+        /* 全局滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 卡片基础样式 */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(99, 102, 241, 0.2);
         }
     </style>
-    
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- 用户认证菜单 -->
     <nav class="user-auth-menu">
         {% if user.is_authenticated %}
-            <span class="welcome-text">欢迎，<strong>{{ user.username }}</strong></span>
-            <a href="{% url 'polls:profile' %}" class="btn btn-sm btn-outline-primary">个人中心</a>
-            <a href="{% url 'polls:logout' %}" class="btn btn-sm btn-outline-secondary">退出</a>
+            <span class="welcome-text">
+                <i class="fas fa-user-circle me-1"></i>
+                欢迎，<strong>{{ user.username }}</strong>
+            </span>
+            <a href="{% url 'polls:profile' %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-user me-1"></i>个人中心
+            </a>
+            <a href="{% url 'polls:logout' %}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-sign-out-alt me-1"></i>退出
+            </a>
         {% else %}
-            <a href="{% url 'polls:login' %}" class="btn btn-sm btn-outline-primary">登录</a>
-            <a href="{% url 'polls:register' %}" class="btn btn-sm btn-success">注册</a>
+            <a href="{% url 'polls:login' %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-sign-in-alt me-1"></i>登录
+            </a>
+            <a href="{% url 'polls:register' %}" class="btn btn-sm btn-success">
+                <i class="fas fa-user-plus me-1"></i>注册
+            </a>
         {% endif %}
     </nav>
-    
+
     <!-- 主内容区域 -->
     <div class="container main-container">
         <!-- 页面标题 -->
         <div class="page-header">
             <h1>{% block page_title %}Django投票系统{% endblock %}</h1>
-            <p class="text-muted">{% block page_subtitle %}用户认证功能测试{% endblock %}</p>
+            <p class="text-muted">{% block page_subtitle %}现代化的在线投票平台{% endblock %}</p>
         </div>
-        
+
         <!-- 消息提醒区域 -->
         {% if messages %}
         <div class="messages">
             {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
+                <div class="d-flex align-items-center">
+                    {% if message.tags == 'success' %}
+                    <i class="fas fa-check-circle me-3 text-success"></i>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                    <i class="fas fa-exclamation-circle me-3 text-danger"></i>
+                    {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-triangle me-3 text-warning"></i>
+                    {% elif message.tags == 'info' %}
+                    <i class="fas fa-info-circle me-3 text-info"></i>
+                    {% endif %}
+                    <div>{{ message }}</div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             {% endfor %}
         </div>
         {% endif %}
-        
+
         <!-- 主要内容 -->
         {% block content %}
-        <div class="alert alert-info">
-            这里是页面内容区域，由子模板填充。
+        <div class="glass-card p-5 text-center">
+            <div class="mb-4">
+                <i class="fas fa-vote-yea text-primary" style="font-size: 4rem;"></i>
+            </div>
+            <h3 class="mb-3">欢迎使用Django投票系统</h3>
+            <p class="text-muted mb-4">这是一个现代化的在线投票平台，请选择您想要查看的功能。</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'polls:login' %}" class="btn btn-primary px-4">
+                    <i class="fas fa-sign-in-alt me-2"></i>立即登录
+                </a>
+                <a href="{% url 'polls:register' %}" class="btn btn-outline-primary px-4">
+                    <i class="fas fa-user-plus me-2"></i>注册账户
+                </a>
+            </div>
         </div>
         {% endblock %}
-        
+
         <!-- 页脚 -->
         <footer class="mt-5 pt-4 border-top">
-            <div class="text-center text-muted">
-                <p>© {% now "Y" %} Django投票系统 | 用户认证演示</p>
+            <div class="text-center">
+                <div class="mb-3">
+                    <i class="fas fa-code text-primary me-2"></i>
+                    <span class="fw-bold">Django投票系统</span>
+                </div>
+                <p class="text-muted mb-0">
+                    © {% now "Y" %} Django投票系统 | 基于Django 4.2开发
+                </p>
+                <p class="text-muted small mt-2">
+                    <i class="fas fa-heart text-danger me-1"></i>
+                    用技术创造价值，让投票更简单
+                </p>
             </div>
         </footer>
     </div>
-    
-    <!-- Bootstrap JS -->
+
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
+    <!-- 全局JavaScript -->
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加页面加载完成类
+            document.body.classList.add('page-loaded');
+            
+            // 用户菜单动画
+            const userMenu = document.querySelector('.user-auth-menu');
+            if (userMenu) {
+                setTimeout(() => {
+                    userMenu.style.opacity = '1';
+                    userMenu.style.transform = 'translateY(0)';
+                }, 300);
+            }
+            
+            // 自动关闭消息提醒
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const closeBtn = alert.querySelector('.btn-close');
+                    if (closeBtn) {
+                        setTimeout(() => {
+                            closeBtn.click();
+                        }, 5000);
+                    }
+                }, 300);
+            });
+        });
+
+        // 滚动效果
+        window.addEventListener('scroll', function() {
+            const userMenu = document.querySelector('.user-auth-menu');
+            if (window.scrollY > 50) {
+                userMenu.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.05)';
+                userMenu.style.padding = '10px 18px';
+            } else {
+                userMenu.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.08)';
+                userMenu.style.padding = '12px 20px';
+            }
+        });
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -3,6 +3,21 @@ li a {
 }
 
 body {
-    background: white
-    url("images/background.jpg") no-repeat;  
+    background-color: #f9fafb; /* 柔和的灰色背景 */
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
 }
+
+/* 可选：添加一些装饰性元素 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+    z-index: 1000;
+}
+

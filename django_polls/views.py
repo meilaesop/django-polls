@@ -1,9 +1,9 @@
-from django.db.models import F
+from django.db.models import F, Sum  # 添加Sum导入
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404,render
 from django.urls import reverse
 from django.views import generic
-from .models import Choice,Question
+from .models import Choice,Question,Vote
 from django.utils import timezone
 
 class IndexView(generic.ListView):
@@ -16,6 +16,16 @@ class IndexView(generic.ListView):
         """
         return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:5]
 
+    def get_context_data(self, **kwargs):
+        """添加额外的上下文数据 - 这是关键！"""
+        context = super().get_context_data(**kwargs)
+        # 确保 request 在上下文中
+        context['request'] = self.request
+        # user 应该通过 auth context processor 自动添加
+        # 但我们可以确保它存在
+        context['user'] = self.request.user
+        return context
+
 class DetailView(generic.DetailView):
     model = Question
     template_name = "polls/detail.html"
@@ -25,10 +35,20 @@ class DetailView(generic.DetailView):
         excludes any questions that aren't published yet.
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['request'] = self.request
+        context['user'] = self.request.user
+        return context
 
 class ResultsView(generic.DetailView):
     model = Question
     template_name = "polls/results.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['request'] = self.request
+        context['user'] = self.request.user
+        return context
 
 def vote(request,question_id):
     question=get_object_or_404(Question,pk=question_id)
@@ -47,6 +67,15 @@ def vote(request,question_id):
     else:
         selected_choice.votes=F("votes")+1
         selected_choice.save()
+
+        # 记录用户投票
+        if request.user.is_authenticated:
+            Vote.objects.update_or_create(
+                user=request.user,
+                question=question,
+                defaults={'choice': selected_choice}
+            )
+
         # always return an HttpResponseRedirect after successfully dealing
         # with POST data.This prevents data from being posted twice if a user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results",args=(question.id,)))
@@ -57,6 +86,7 @@ def vote(request,question_id):
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 
@@ -71,7 +101,7 @@ def register(request):
             return redirect('polls:index')
     else:
         form = UserCreationForm()
-    
+
     return render(request, 'polls/register.html', {'form': form})
 
 def custom_login(request):
@@ -87,13 +117,39 @@ def custom_login(request):
                 return redirect('polls:index')
     else:
         form = AuthenticationForm()
-    
+
     return render(request, 'polls/login.html', {'form': form})
 
 @login_required
 def profile(request):
-    """用户个人资料页面"""
-    return render(request, 'polls/profile.html', {'user': request.user})
+    """个人中心页面"""
+    user = request.user
+    
+    # 准备用户数据
+    user_data = {
+        'username': user.username,
+        'email': user.email,
+        'date_joined': user.date_joined,
+        'last_login': user.last_login,
+        'is_active': user.is_active,
+        'is_staff': user.is_staff,
+        'is_superuser': user.is_superuser,
+    }
+    
+    # 计算用户注册天数
+    if user.date_joined:
+        days_registered = (timezone.now() - user.date_joined).days
+        user_data['days_registered'] = days_registered
+    else:
+        user_data['days_registered'] = 0
+    
+    context = {
+        'user_data': user_data,
+        'page_title': '个人中心',
+        'page_subtitle': '查看和管理您的账户信息',
+    }
+    
+    return render(request, 'polls/profile.html', context)
 
 def custom_logout(request):
     """自定义退出视图"""

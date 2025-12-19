@@ -1,192 +1,839 @@
-{% extends "polls/base.html" %}
+{% extends 'polls/base.html' %}
 
-{% block title %}个人资料 - Django投票系统{% endblock %}
-{% block page_title %}个人资料中心{% endblock %}
-{% block page_subtitle %}管理您的账户信息{% endblock %}
+{% block title %}个人中心 - Django投票系统{% endblock %}
+{% block description %}管理您的个人信息、投票记录和账户设置{% endblock %}
 
-{% block content %}
-<div class="row">
-    <!-- 左侧：用户信息卡片 -->
-    <div class="col-md-4">
-        <div class="card shadow mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="bi bi-person-circle"></i> 基本信息</h5>
-            </div>
-            <div class="card-body text-center">
-                <!-- 用户头像 -->
-                <div class="avatar mb-3">
-                    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white; font-size: 48px; font-weight: bold;">
-                        {{ user.username|first|upper }}
-                    </div>
-                </div>
-                
-                <!-- 用户名 -->
-                <h4>{{ user.username }}</h4>
-                <p class="text-muted">
-                    {% if user.is_staff %}
-                        <span class="badge bg-success">管理员</span>
-                    {% else %}
-                        <span class="badge bg-secondary">普通用户</span>
-                    {% endif %}
-                </p>
-                
-                <!-- 基本信息表格 -->
-                <table class="table table-borderless table-sm">
-                    <tr>
-                        <td><i class="bi bi-envelope"></i> 邮箱</td>
-                        <td>{{ user.email|default:"未设置" }}</td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-calendar-check"></i> 注册时间</td>
-                        <td>{{ user.date_joined|date:"Y年m月d日 H:i" }}</td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-clock-history"></i> 最后登录</td>
-                        <td>{{ user.last_login|date:"Y年m月d日 H:i" }}</td>
-                    </tr>
-                    <tr>
-                        <td><i class="bi bi-check-circle"></i> 账户状态</td>
-                        <td>
-                            {% if user.is_active %}
-                                <span class="text-success">活跃</span>
-                            {% else %}
-                                <span class="text-danger">禁用</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        
-        <!-- 快速操作 -->
-        <div class="card shadow">
-            <div class="card-header bg-light">
-                <h6 class="mb-0"><i class="bi bi-lightning"></i> 快速操作</h6>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="{% url 'polls:index' %}" class="btn btn-outline-primary">
-                        <i class="bi bi-house"></i> 返回首页
-                    </a>
-                    <a href="#" class="btn btn-outline-secondary" onclick="alert('功能开发中...')">
-                        <i class="bi bi-key"></i> 修改密码
-                    </a>
-                    <a href="#" class="btn btn-outline-secondary" onclick="alert('功能开发中...')">
-                        <i class="bi bi-gear"></i> 账户设置
-                    </a>
-                    <a href="{% url 'polls:logout' %}" class="btn btn-outline-danger">
-                        <i class="bi bi-box-arrow-right"></i> 退出登录
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 右侧：投票统计和活动 -->
-    <div class="col-md-8">
-        <!-- 投票统计卡片 -->
-        <div class="card shadow mb-4">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> 投票统计</h5>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-4 mb-3">
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <h2 class="text-primary">0</h2>
-                                <p class="text-muted mb-0">参与投票</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <h2 class="text-success">0</h2>
-                                <p class="text-muted mb-0">创建投票</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <h2 class="text-info">0</h2>
-                                <p class="text-muted mb-0">评论数量</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i>
-                    <strong>提示：</strong> 投票统计功能正在开发中，即将上线！
-                </div>
-            </div>
-        </div>
-        
-        <!-- 最近活动 -->
-        <div class="card shadow">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0"><i class="bi bi-activity"></i> 最近活动</h5>
-            </div>
-            <div class="card-body">
-                <div class="list-group">
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1"><i class="bi bi-person-check"></i> 账户登录</h6>
-                            <small>刚刚</small>
-                        </div>
-                        <p class="mb-1">您刚刚登录了系统</p>
-                    </div>
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1"><i class="bi bi-star"></i> 欢迎新用户</h6>
-                            <small>{{ user.date_joined|timesince }}前</small>
-                        </div>
-                        <p class="mb-1">欢迎加入Django投票系统！</p>
-                    </div>
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1"><i class="bi bi-trophy"></i> 成就待解锁</h6>
-                            <small>即将上线</small>
-                        </div>
-                        <p class="mb-1">参与第一次投票即可解锁"投票新人"成就</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{% block page_title %}个人中心{% endblock %}
+{% block page_subtitle %}管理您的账户信息和投票活动{% endblock %}
 
-<!-- 自定义样式 -->
+{% block extra_css %}
 <style>
-    .avatar {
-        position: relative;
+    /* 个人中心专属样式 - 2025风格 */
+    .profile-container {
+        max-width: 1200px;
+        margin: 0 auto;
     }
-    .avatar::after {
+
+    /* 用户信息卡片 */
+    .user-profile-card {
+        background: var(--card-bg);
+        border-radius: 24px;
+        padding: 40px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        box-shadow: 0 20px 60px rgba(99, 102, 241, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .user-profile-card::before {
         content: '';
         position: absolute;
-        bottom: 5px;
-        right: 10px;
-        width: 25px;
-        height: 25px;
-        background: #28a745;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: var(--primary-gradient);
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: white;
+        box-shadow: 0 15px 35px rgba(99, 102, 241, 0.3);
+        position: relative;
+        border: 4px solid white;
+    }
+
+    .profile-avatar .status-indicator {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #10b981;
         border: 3px solid white;
     }
-    .table td {
-        padding: 8px 0;
+
+    .profile-info h2 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-color) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
-    .table td:first-child {
-        width: 40%;
-        color: #666;
+
+    .profile-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 20px;
     }
-    .list-group-item {
-        border-left: none;
-        border-right: none;
+
+    .stat-item {
+        text-align: center;
     }
-    .list-group-item:first-child {
-        border-top: none;
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-top: 4px;
+    }
+
+    /* 卡片网格布局 */
+    .profile-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .profile-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(99, 102, 241, 0.1);
+    }
+
+    .card-header i {
+        width: 48px;
+        height: 48px;
+        background: var(--primary-gradient);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    /* 投票历史列表 */
+    .vote-history {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .vote-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+
+    .vote-item:hover {
+        background: rgba(99, 102, 241, 0.02);
+        padding-left: 10px;
+        padding-right: 10px;
+        margin: 0 -10px;
+        border-radius: 8px;
+    }
+
+    .vote-item:last-child {
+        border-bottom: none;
+    }
+
+    .vote-info h5 {
+        margin: 0 0 5px 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .vote-info p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .vote-date {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        white-space: nowrap;
+    }
+
+    /* 设置表单 */
+    .settings-form .form-group {
+        margin-bottom: 25px;
+    }
+
+    .settings-form label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+        display: block;
+    }
+
+    .settings-form .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .settings-form .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-hint {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 6px;
+    }
+
+    /* 按钮组 */
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-edit {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #f1f5f9;
+        border: 2px solid #e2e8f0;
+        color: #64748b;
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #e2e8f0;
+        color: #475569;
+        border-color: #cbd5e1;
+    }
+
+    /* 徽章样式 */
+    .badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    .badge-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+
+    .badge-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+
+    .badge-info {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+    }
+
+    /* 进度条 */
+    .progress-container {
+        margin: 25px 0;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+        background: #e2e8f0;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: var(--primary-gradient);
+        border-radius: 5px;
+        transition: width 0.6s ease;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 992px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-stats {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .user-profile-card {
+            padding: 25px;
+        }
+        
+        .profile-stats {
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .action-buttons .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    /* 动画效果 */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .profile-card {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    .profile-card:nth-child(1) { animation-delay: 0.1s; }
+    .profile-card:nth-child(2) { animation-delay: 0.2s; }
+    .profile-card:nth-child(3) { animation-delay: 0.3s; }
+    .profile-card:nth-child(4) { animation-delay: 0.4s; }
+
+    /* 空状态 */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-secondary);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-state h4 {
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+    }
+
+    /* 账户安全指示器 */
+    .security-score {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(99, 102, 241, 0.05);
+        border-radius: 12px;
+    }
+
+    .score-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: conic-gradient(var(--primary-color) 75%, #e2e8f0 0%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .score-circle::before {
+        content: '';
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 50%;
+    }
+
+    .score-value {
+        position: relative;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--primary-color);
+    }
+
+    /* 标签样式 */
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 2px;
+    }
+
+    .tag i {
+        margin-right: 5px;
+        font-size: 0.8rem;
     }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- 用户信息概览 -->
+    <div class="user-profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ user.username|first|upper }}
+                <div class="status-indicator"></div>
+            </div>
+            <div class="profile-info">
+                <h2>{{ user.username }}</h2>
+                <p class="text-muted">
+                    <i class="fas fa-envelope me-2"></i>{{ user.email }}
+                    <span class="badge badge-success ms-3">
+                        <i class="fas fa-check-circle me-1"></i>已验证
+                    </span>
+                </p>
+                <p class="text-muted">
+                    <i class="fas fa-calendar-alt me-2"></i>加入时间: {{ user.date_joined|date:"Y年m月d日" }}
+                </p>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">18</span>
+                        <span class="stat-label">参与投票</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">6</span>
+                        <span class="stat-label">创建投票</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">94%</span>
+                        <span class="stat-label">完成率</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 账户安全指示器 -->
+        <div class="security-score">
+            <div class="score-circle">
+                <span class="score-value">高</span>
+            </div>
+            <div>
+                <h5 class="mb-2">账户安全评分</h5>
+                <p class="text-muted small mb-0">您的账户安全状况良好，继续保持！</p>
+                <div class="mt-2">
+                    <span class="tag"><i class="fas fa-shield-alt"></i>强密码</span>
+                    <span class="tag"><i class="fas fa-envelope"></i>已验证邮箱</span>
+                    <span class="tag"><i class="fas fa-clock"></i>最近活跃</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能卡片网格 -->
+    <div class="profile-grid">
+        <!-- 投票历史 -->
+        <div class="profile-card">
+            <div class="card-header">
+                <i class="fas fa-history"></i>
+                <h3>最近投票</h3>
+            </div>
+            <ul class="vote-history">
+                <li class="vote-item">
+                    <div class="vote-info">
+                        <h5>最佳编程语言选择</h5>
+                        <p>选择了: Python</p>
+                    </div>
+                    <span class="vote-date">2小时前</span>
+                </li>
+                <li class="vote-item">
+                    <div class="vote-info">
+                        <h5>团队建设活动投票</h5>
+                        <p>选择了: 户外拓展</p>
+                    </div>
+                    <span class="vote-date">昨天</span>
+                </li>
+                <li class="vote-item">
+                    <div class="vote-info">
+                        <h5>年度优秀员工评选</h5>
+                        <p>选择了: 张三</p>
+                    </div>
+                    <span class="vote-date">3天前</span>
+                </li>
+                <li class="vote-item">
+                    <div class="vote-info">
+                        <h5>新产品功能调研</h5>
+                        <p>参与了问卷</p>
+                    </div>
+                    <span class="vote-date">1周前</span>
+                </li>
+            </ul>
+            <div class="text-center mt-3">
+                <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-list me-2"></i>查看所有投票记录
+                </a>
+            </div>
+        </div>
+
+        <!-- 账户设置 -->
+        <div class="profile-card">
+            <div class="card-header">
+                <i class="fas fa-cog"></i>
+                <h3>账户设置</h3>
+            </div>
+            <form class="settings-form">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" class="form-control" value="{{ user.username }}" readonly>
+                    <p class="form-hint">用户名创建后不可修改</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">邮箱地址</label>
+                    <input type="email" id="email" class="form-control" value="{{ user.email }}">
+                    <p class="form-hint">用于接收通知和重置密码</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notifications">通知偏好</label>
+                    <select id="notifications" class="form-control">
+                        <option selected>接收所有通知</option>
+                        <option>仅重要通知</option>
+                        <option>不接收通知</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>隐私设置</label>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="publicProfile" checked>
+                        <label class="form-check-label" for="publicProfile">
+                            公开我的投票活动（匿名统计）
+                        </label>
+                    </div>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="emailPublic" checked>
+                        <label class="form-check-label" for="emailPublic">
+                            允许其他用户查看我的邮箱
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 创建的活动 -->
+        <div class="profile-card">
+            <div class="card-header">
+                <i class="fas fa-poll"></i>
+                <h3>我的投票</h3>
+            </div>
+            <div class="mb-4">
+                <h5 class="mb-3">活动统计</h5>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>进行中</span>
+                        <span>2/6</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: 33%"></div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>已完成</span>
+                        <span>4/6</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: 67%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="mb-3">最近创建</h5>
+                <div class="vote-item">
+                    <div class="vote-info">
+                        <h5>团队聚餐地点选择</h5>
+                        <p>32人参与 · 进行中</p>
+                    </div>
+                    <span class="badge badge-warning">活跃</span>
+                </div>
+                <div class="vote-item">
+                    <div class="vote-info">
+                        <h5>技术分享会主题</h5>
+                        <p>45人参与 · 已结束</p>
+                    </div>
+                    <span class="badge badge-success">完成</span>
+                </div>
+            </div>
+            
+            <a href="#" class="btn btn-outline-primary w-100">
+                <i class="fas fa-plus me-2"></i>创建新投票
+            </a>
+        </div>
+
+        <!-- 系统信息 -->
+        <div class="profile-card">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i>
+                <h3>系统信息</h3>
+            </div>
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">账户状态</span>
+                    <span class="badge badge-success">正常</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">邮箱验证</span>
+                    <span class="badge badge-success">已验证</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">最后登录</span>
+                    <span>{% now "Y-m-d H:i" %}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">IP地址</span>
+                    <span>192.168.1.1</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted">客户端</span>
+                    <span>Chrome/Windows</span>
+                </div>
+            </div>
+            
+            <div class="alert alert-info border-0 bg-light">
+                <div class="d-flex">
+                    <i class="fas fa-lightbulb text-info me-3 mt-1"></i>
+                    <div>
+                        <h6 class="alert-heading mb-2">提示</h6>
+                        <p class="small mb-0">定期更新密码可以保护您的账户安全。建议每90天更换一次密码。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-buttons">
+        <button class="btn btn-edit">
+            <i class="fas fa-save me-2"></i>保存更改
+        </button>
+        <button class="btn btn-secondary">
+            <i class="fas fa-key me-2"></i>修改密码
+        </button>
+        <button class="btn btn-secondary">
+            <i class="fas fa-download me-2"></i>导出数据
+        </button>
+        <a href="{% url 'polls:logout' %}" class="btn btn-secondary ms-auto">
+            <i class="fas fa-sign-out-alt me-2"></i>安全退出
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 表单自动保存提示
+        const formInputs = document.querySelectorAll('.settings-form input, .settings-form select');
+        let saveTimeout;
+        
+        formInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                // 显示保存提示
+                const saveBtn = document.querySelector('.btn-edit');
+                const originalText = saveBtn.innerHTML;
+                
+                saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>有未保存的更改';
+                saveBtn.classList.add('btn-warning');
+                
+                // 清除之前的定时器
+                clearTimeout(saveTimeout);
+                
+                // 3秒后恢复原状
+                saveTimeout = setTimeout(() => {
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.classList.remove('btn-warning');
+                }, 3000);
+            });
+        });
+        
+        // 保存按钮点击事件
+        document.querySelector('.btn-edit').addEventListener('click', function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            // 显示保存中状态
+            btn.innerHTML = '<span class="loading-spinner me-2"></span>保存中...';
+            btn.disabled = true;
+            
+            // 模拟API调用
+            setTimeout(() => {
+                // 显示成功状态
+                btn.innerHTML = '<i class="fas fa-check me-2"></i>保存成功';
+                btn.classList.remove('btn-warning');
+                btn.classList.add('btn-success');
+                
+                // 3秒后恢复原状
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.disabled = false;
+                }, 2000);
+                
+                // 显示成功消息
+                showNotification('设置已成功保存！', 'success');
+            }, 1500);
+        });
+        
+        // 修改密码按钮
+        document.querySelectorAll('.btn-secondary')[0].addEventListener('click', function() {
+            showNotification('密码修改功能即将开放！', 'info');
+        });
+        
+        // 导出数据按钮
+        document.querySelectorAll('.btn-secondary')[1].addEventListener('click', function() {
+            showNotification('数据导出功能开发中...', 'info');
+        });
+        
+        // 显示通知的函数
+        function showNotification(message, type) {
+            // 创建消息元素
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-3"></i>
+                    <div>${message}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // 添加到消息区域
+            const messagesContainer = document.querySelector('.messages');
+            if (messagesContainer) {
+                messagesContainer.appendChild(alert);
+                
+                // 5秒后自动消失
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.remove();
+                    }
+                }, 5000);
+            }
+        }
+        
+        // 卡片悬停效果增强
+        const cards = document.querySelectorAll('.profile-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-5px) scale(1)';
+            });
+        });
+        
+        // 统计数字动画
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                element.textContent = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // 页面加载后启动数字动画
+        setTimeout(() => {
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                const targetValue = parseInt(stat.textContent);
+                animateValue(stat, 0, targetValue, 1500);
+            });
+        }, 500);
+    });
+</script>
 {% endblock %}
